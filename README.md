@@ -12,3 +12,8 @@ Basic features of the application
 - All of the messages saved encrypted to the db
 
 Tech: bootstrap, ejs, node.js, express, mongodb, socket-io
+
+![image](https://user-images.githubusercontent.com/15102957/119279851-eddef580-bc36-11eb-8a5f-4794fdbea1fb.png)
+
+
+![image](https://user-images.githubusercontent.com/15102957/119279825-d7389e80-bc36-11eb-89e6-d26180bea318.png)
