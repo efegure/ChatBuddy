@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    .form-control {
+      margin-bottom: 1rem;
+    }
+
+    .header {
+      margin-bottom: 1rem;
+    }
+  </style>
+  <script>
+
+    async function createChat(x) {
+      console.log(x, JSON.stringify({ "participants": [x] }))
+      fetch("create-chat", {
+        method: 'post', // *GET, POST, PUT, DELETE, etc.
+        mode: 'same-origin',
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "participants": [x] }), // body data type must match "Content-Type" header
+      }).then(async (response) => {
+        const jsn = await response.json();
+        console.log(jsn)
+        window.location.href = "/chat?id=" + jsn.id;
+      });
+    }
+    function goToChat(id) {
+      window.location.href = "/chat?id=" + id;
+    }
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">ChatBuddy</a>
+
+      <label class="navbar-text" style="width: inherit;">
+        Welcome, <%= user %>
+      </label>
+      <form action="/logout" class="d-flex" style="justify-content: flex-end;">
+        <button class="btn btn-outline-success" type="submit">Logout</button>
+      </form>
+    </div>
+  </nav>
+  <div class="container">
+
+    <div class="align-middle row" style="font-size: 15px">
+      <div class="col">
+        <h3 style="margin-top:16px;" class="text-center header">Select a user to Chat !</h2>
+
+          <ul class="list-group">
+            <% users.forEach(function(user,index) { %>
+              <li onclick="createChat( '<%= user.username %>' )" class="list-group-item">
+                <%= user.username %>
+              </li>
+              <% }); %>
+          </ul>
+      </div>
+      <div class="col">
+        <h3 style="margin-top:16px;" class="text-center header">Chats:</h2>
+          <div class="list-group">
+            <% chats.forEach(function(chat,index) { %>
+              <a onclick="goToChat('<%= chat._id%>')" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">
+                    <%= chat.participants %>
+                  </h5>
+                  <small><%= chat.lastMessageTime%></small>
+                </div>
+                <p class="mb-1">
+                  <%= chat.lastMessage%>
+                </p>
+                <!-- <small>
+                  <%= chat.lastMessageTime %>
+                </small> -->
+              </a>
+              <% }); %>
+          </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

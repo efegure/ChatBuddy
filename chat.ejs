@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
+  <style>
+    body {
+      background: #eee;
+    }
+    html {
+      height: 100%;
+    }
+
+    .chat-list {
+      padding: 0;
+      font-size: .8rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+      margin-bottom:0px;
+    }
+
+    .chat-list li {
+      margin-bottom: 10px;
+      color: black;
+    }
+
+    .chat-list .chat-img {
+      float: left;
+      width: 48px;
+    }
+
+    .chat-list .chat-img img {
+      -webkit-border-radius: 50px;
+      -moz-border-radius: 50px;
+      border-radius: 50px;
+      width: 100%;
+    }
+
+    .chat-list .chat-message {
+      -webkit-border-radius: 20px;
+      -moz-border-radius: 20px;
+      border-radius: 20px;
+      background: #d5d6d8;
+      display: inline-block;
+      padding: 10px 20px;
+      position: relative;
+    }
+
+    .chat-list .chat-message:before {
+      content: "";
+      position: absolute;
+      top: 15px;
+      width: 0;
+      height: 0;
+    }
+
+    .chat-list .chat-message h5 {
+      margin: 0 0 5px 0;
+      font-weight: 600;
+      line-height: 100%;
+      font-size: .9rem;
+    }
+
+    .chat-list .chat-message p {
+      line-height: 18px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-list .chat-body {
+      margin-left: 20px;
+      float: left;
+      width: 70%;
+    }
+
+    /* .chat-list .in .chat-message:before {
+      left: -12px;
+      border-bottom: 20px solid transparent;
+      border-right: 20px solid #d5d6d8;
+    } */
+
+    .chat-list .out .chat-img {
+      float: right;
+    }
+
+    .chat-list .out .chat-body {
+      float: right;
+      margin-right: 20px;
+      text-align: right;
+    }
+
+    .chat-list .out .chat-message {
+      background: #94c2fff8;
+    }
+
+    /* .chat-list .out .chat-message:before {
+      right: -12px;
+      border-bottom: 20px solid transparent;
+      border-left: 20px solid #94c2fff8;
+    } */
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding:0px;
+    }
+
+    .card .card-header:first-child {
+      -webkit-border-radius: 0.3rem 0.3rem 0 0;
+      -moz-border-radius: 0.3rem 0.3rem 0 0;
+      border-radius: 0.3rem 0.3rem 0 0;
+    }
+
+    .card .card-header {
+      background: #17202b;
+      font-size: 1rem;
+      padding: .65rem 1rem;
+      position: relative;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .content {
+      /* margin-top: 40px; */
+      height: 100%;
+    }
+    .text-box{
+      padding: 12px 24px 8px 24px;
+    }
+    .nav {
+      padding: 8px 24px;
+      
+      margin-bottom: 8px;
+    }
+  </style>
+  <script src="https://cdn.socket.io/3.1.1/socket.io.min.js"
+    integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO"
+    crossorigin="anonymous"></script>
+
+  <script>
+    var urlParams = new URLSearchParams(window.location.search);
+    var user = "<%= user %>";
+    console.log(urlParams.get('id')); // "edit"
+    const socket = io();
+    urlParams.get('id')
+
+    socket.emit('enterRoom', urlParams.get('id'));
+
+    socket.on('enteredRoom', function (data) {
+      console.log("entered to Room", data)
+    });
+
+    socket.on('message', function (data) {
+      console.log("message", data)
+      insertMessage(data);
+    });
+    function init() {
+      var input = document.getElementById("textbox");
+      // Execute a function when the user releases a key on the keyboard
+      input.addEventListener("keyup", function (event) {
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+          // Cancel the default action, if needed
+          event.preventDefault();
+          // Trigger the button element with a click
+          if (input.value !== "") {
+            document.getElementById("send-btn").click();
+          }
+        }
+      });
+    }
+
+    function insertMessage(data) {
+      console.log("user")
+      var ul = document.getElementById("chat");
+      var li = document.createElement("li");
+      li.className = data.sender === user ? 'out' : 'in'
+
+      // var imgDiv = document.createElement("div");
+      // imgDiv.className = "chat-img"
+      // var img = document.createElement("img");
+      // img.src = data.sender === user ? 'https://bootdey.com/img/Content/avatar/avatar1.png'
+      //   : 'https://bootdey.com/img/Content/avatar/avatar6.png'
+      // imgDiv.appendChild(img);
+
+      var bodyDiv = document.createElement("div");
+      bodyDiv.className = "chat-body"
+
+      var messageDiv = document.createElement("div");
+      messageDiv.className = "chat-message"
+
+      var sender = document.createElement("h5");
+      sender.innerHTML = data.sender;
+      var content = document.createElement("p");
+      content.innerHTML = data.content;
+
+      messageDiv.appendChild(sender);
+      messageDiv.appendChild(content);
+      bodyDiv.appendChild(messageDiv);
+
+      // li.appendChild(imgDiv);
+      li.appendChild(bodyDiv);
+      ul.appendChild(li);
+      li.scrollIntoView();
+      
+    }
+
+    function sendMessage(x) {
+      socket.emit('message', document.getElementById("textbox").value);
+      document.getElementById("textbox").value = "";
+    }
+  </script>
+</head>
+
+<body class="h-100" onload="init()">
+  <div class="content">
+    <div class="row g-0 h-100">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 h-100">
+        <div class="card h-100" style="border: none;">
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark g-6 nav">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#"><% participants.forEach(function(part,index) { %>
+                Chat with  <%= part %>
+                <% }); %>
+              </a>
+              <form action="login" method="get" class="d-flex" style="justify-content: flex-end;">
+                <button class="btn btn-outline-success" type="submit">Back</button>
+              </form>
+            </div>
+          </nav>
+          <div class="card-body height3 g-0">
+            <ul class="chat-list" id="chat">
+              <% messages.forEach(function(message,index) { %>
+                <li class="<%= message.sender === user ? 'out': 'in' %>">
+                  <!-- <div class="chat-img">
+                    <img alt="Avtar"
+                      src="<%= message.sender === user ? 'https://bootdey.com/img/Content/avatar/avatar1.png': 'https://bootdey.com/img/Content/avatar/avatar6.png' %>">
+                  </div> -->
+                  <div class="chat-body">
+                    <div class="chat-message">
+                      <h5>
+                        <%= message.sender %>
+                      </h5>
+                      <p>
+                        <%= message.content %>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <% }); %>
+
+            </ul>
+            <div class="input-group mb-3 text-box">
+              <input id="textbox" type="text" class="form-control" placeholder="Type a message..." aria-label="Type a message..." aria-describedby="button-addon2">
+              <button id="send-btn" class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
