@@ -10,3 +10,5 @@ Basic features of the application
 - Messages are sent using a websocket connection
 - Each chat creates a unique chat room to connected users
 - All of the messages saved encrypted to the db
+
+Tech: bootstrap, ejs, node.js, express, mongodb, socket-io
